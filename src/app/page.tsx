@@ -12,7 +12,7 @@ export default function Home() {
         </video>
         <div className="z-10">
           <main>
-            <h1>EmiStla is under construction</h1>
+            <h1>emistla.me is under construction</h1>
           </main>
 
           <a
