@@ -1,9 +1,28 @@
 export default function Home() {
   return (
-    <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20">
-      <main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start">
-        <h1>EmiStla</h1>
-      </main>
+    <div>
+      <div className="flex flex-col justify-center min-h-screen p-24 _halftone">
+        <video
+          autoPlay
+          muted
+          loop
+          className="absolute top-0 left-0 w-full h-full object-cover -z-10 brightness-40"
+        >
+          <source src="/bg-video-wide.webm" type="video/webm" />
+        </video>
+        <div className="z-10">
+          <main>
+            <h1>EmiStla is under construction</h1>
+          </main>
+
+          <a
+            href="https://www.youtube.com/watch?v=DFJRMGHLnZ0"
+            className="text-sm absolute bottom-5 right-5 p-3 text-center text-white border border-white rounded-full bg-black/50"
+          >
+            Video credits
+          </a>
+        </div>
+      </div>
     </div>
   );
 }
