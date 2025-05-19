@@ -21,7 +21,7 @@ h1 {
 }
 
 ._halftone {
-  background-image: radial-gradient(circle, #2d1b1a 1.5px, transparent 1.6px);
+  background-image: radial-gradient(circle, #141b41 1.5px, transparent 1.6px);
   background-size: 18px 18px;
   background-position: 0 0;
 }

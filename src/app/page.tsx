@@ -8,7 +8,7 @@ export default function Home() {
           loop
           className="absolute top-0 left-0 w-full h-full object-cover -z-10 brightness-40"
         >
-          <source src="/bg-video-wide.webm" type="video/webm" />
+          <source src="/bg-video-wide.mp4" type="video/webm" />
         </video>
         <div className="z-10">
           <main>
@@ -16,7 +16,7 @@ export default function Home() {
           </main>
 
           <a
-            href="https://www.youtube.com/watch?v=DFJRMGHLnZ0"
+            href="https://steamcommunity.com/sharedfiles/filedetails/?id=3377150422"
             className="text-sm absolute bottom-5 right-5 p-3 text-center text-white border border-white rounded-full bg-black/50"
           >
             Video credits
