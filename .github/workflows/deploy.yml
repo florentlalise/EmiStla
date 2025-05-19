@@ -26,6 +26,6 @@ jobs:
             set -e
             cd /home/emi/EmiStla
             git pull origin main
-            docker compose down -v
+            docker compose pull
             docker compose up --build -d
           EOF
