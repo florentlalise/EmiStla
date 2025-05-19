@@ -24,8 +24,8 @@ jobs:
         run: |
           ssh ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }} << 'EOF'
             set -e
-            cd /home/emi/emistla
+            cd /home/emi/EmiStla
             git pull origin main
-            docker compose --env-file .env down
-            docker compose --env-file .env up --build -d
+            docker compose down -v
+            docker compose up --build -d
           EOF
