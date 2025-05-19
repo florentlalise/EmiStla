@@ -3,3 +3,6 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
+    network_mode: "host"
+    environment:
+      - NODE_ENV=production
