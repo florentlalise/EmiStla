@@ -1,57 +1,49 @@
-# Base image
+# syntax=docker.io/docker/dockerfile:1
+
 FROM node:18-alpine AS base
+
+# Install dependencies only when needed
+FROM base AS deps
+RUN apk add --no-cache libc6-compat
 WORKDIR /app
-ENV PATH /app/node_modules/.bin:$PATH
-COPY package.json package-lock.json ./
 
-# Install dependencies
-RUN npm install
+COPY package.json yarn.lock* package-lock.json* pnpm-lock.yaml* .npmrc* ./
+RUN \
+  if [ -f yarn.lock ]; then yarn --frozen-lockfile; \
+  elif [ -f package-lock.json ]; then npm ci; \
+  elif [ -f pnpm-lock.yaml ]; then corepack enable pnpm && pnpm i --frozen-lockfile; \
+  else echo "Lockfile not found." && exit 1; \
+  fi
 
-# ==============================
-# Development Stage
-# ==============================
-FROM base AS development
-ENV NODE_ENV development
-
-# Copy all source files
-COPY . .
-
-# Expose port
-EXPOSE 3000
-
-# Start dev server
-CMD ["npm", "run", "dev"]
-
-# ==============================
-# Production Build Stage
-# ==============================
+# Rebuild the source code only when needed
 FROM base AS builder
-ENV NODE_ENV production
-
-COPY . .
-RUN npm run build
-
-# ==============================
-# Production Runtime Stage
-# ==============================
-FROM node:18-alpine AS production
 WORKDIR /app
-ENV NODE_ENV production
-ENV PORT 3000
+COPY --from=deps /app/node_modules ./node_modules
+COPY . .
 
-# Install only production dependencies
-COPY package.json package-lock.json ./
-RUN npm ci --production
+RUN \
+  if [ -f yarn.lock ]; then yarn build; \
+  elif [ -f package-lock.json ]; then npm run build; \
+  elif [ -f pnpm-lock.yaml ]; then corepack enable pnpm && pnpm build; \
+  else echo "Lockfile not found." && exit 1; \
+  fi
 
-# Copy built files from builder
+# Production image
+FROM base AS runner
+WORKDIR /app
+
+ENV NODE_ENV=production
+
+RUN addgroup --system --gid 1001 nodejs
+RUN adduser --system --uid 1001 nextjs
+
 COPY --from=builder /app/public ./public
-COPY --from=builder /app/.next ./.next
-COPY --from=builder /app/node_modules ./node_modules
-COPY --from=builder /app/package.json ./package.json
-COPY --from=builder /app/next.config.ts ./next.config.ts
+COPY --from=builder --chown=nextjs:nodejs /app/.next/standalone ./
+COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
 
-# Expose port
+USER nextjs
+
 EXPOSE 3000
+ENV HOSTNAME="0.0.0.0"
 
-# Start server
-CMD ["npm", "run", "start"]
+CMD ["node", "server.js"]
