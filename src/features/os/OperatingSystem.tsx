@@ -1,11 +1,25 @@
 "use client";
 
-import { Suspense, lazy, useMemo } from "react";
+import { Suspense, lazy, ComponentType } from "react";
 import Navbar from "@/features/navigation/navbar/Navbar";
 import Dock from "@/features/navigation/dock/Dock";
 import DraggableWindow from "@/components/ui/DraggableWindow";
 import Wallpaper from "@/components/ui/Wallpaper";
 import { useWindows } from "@/contexts/WindowContext";
+
+const lazyComponentCache = new Map<
+  () => Promise<{ default: ComponentType }>,
+  React.LazyExoticComponent<ComponentType>
+>();
+
+function getLazyComponent(
+  componentLoader: () => Promise<{ default: ComponentType }>
+) {
+  if (!lazyComponentCache.has(componentLoader)) {
+    lazyComponentCache.set(componentLoader, lazy(componentLoader));
+  }
+  return lazyComponentCache.get(componentLoader)!;
+}
 
 export default function OperatingSystem() {
   const {
@@ -27,10 +41,7 @@ export default function OperatingSystem() {
         <Dock />
 
         {windowConfigs.map((config) => {
-          const LazyWindow = useMemo(
-            () => lazy(config.component),
-            [config.component]
-          );
+          const LazyWindow = getLazyComponent(config.component);
           return (
             <DraggableWindow
               key={config.id}
