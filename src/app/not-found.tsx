@@ -34,8 +34,8 @@ export default function NotFound() {
 
         <div className="space-y-6 text-white/90">
           <p className="text-2xl font-light">
-            Your OS ran into a problem and needs to restart. We're just
-            collecting some error info, and then we'll restart for you.
+            Your OS ran into a problem and needs to restart. We&apos;re just
+            collecting some error info, and then we&apos;ll restart for you.
           </p>
 
           <div className="space-y-2">
