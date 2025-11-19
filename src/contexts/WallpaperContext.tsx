@@ -11,7 +11,7 @@ import {
   loadWallpaper,
   saveWallpaper,
   deleteWallpaper,
-} from "@/lib/wallpaperStorage";
+} from "@/lib/storage";
 
 interface WallpaperContextType {
   wallpaperUrl: string;

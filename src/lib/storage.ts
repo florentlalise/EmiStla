@@ -1,7 +1,9 @@
 const DB_NAME = "emistla-db";
-const DB_VERSION = 1;
-const STORE_NAME = "wallpaper";
+const DB_VERSION = 2;
+const WALLPAPER_STORE = "wallpaper";
+const DATA_STORE = "data";
 const WALLPAPER_KEY = "custom-wallpaper";
+const NOTEPAD_KEY = "notepad-content";
 
 /**
  * Initialize IndexedDB
@@ -15,8 +17,15 @@ function openDatabase(): Promise<IDBDatabase> {
 
     request.onupgradeneeded = (event) => {
       const db = (event.target as IDBOpenDBRequest).result;
-      if (!db.objectStoreNames.contains(STORE_NAME)) {
-        db.createObjectStore(STORE_NAME);
+
+      // Create wallpaper store if it doesn't exist
+      if (!db.objectStoreNames.contains(WALLPAPER_STORE)) {
+        db.createObjectStore(WALLPAPER_STORE);
+      }
+
+      // Create data store for text content and other data
+      if (!db.objectStoreNames.contains(DATA_STORE)) {
+        db.createObjectStore(DATA_STORE);
       }
     };
   });
@@ -31,8 +40,8 @@ export async function saveWallpaper(file: File): Promise<string> {
   const db = await openDatabase();
 
   return new Promise((resolve, reject) => {
-    const transaction = db.transaction([STORE_NAME], "readwrite");
-    const store = transaction.objectStore(STORE_NAME);
+    const transaction = db.transaction([WALLPAPER_STORE], "readwrite");
+    const store = transaction.objectStore(WALLPAPER_STORE);
 
     const request = store.put(file, WALLPAPER_KEY);
 
@@ -54,8 +63,8 @@ export async function loadWallpaper(): Promise<string | null> {
     const db = await openDatabase();
 
     return new Promise((resolve, reject) => {
-      const transaction = db.transaction([STORE_NAME], "readonly");
-      const store = transaction.objectStore(STORE_NAME);
+      const transaction = db.transaction([WALLPAPER_STORE], "readonly");
+      const store = transaction.objectStore(WALLPAPER_STORE);
       const request = store.get(WALLPAPER_KEY);
 
       request.onsuccess = () => {
@@ -83,8 +92,8 @@ export async function deleteWallpaper(): Promise<void> {
   const db = await openDatabase();
 
   return new Promise((resolve, reject) => {
-    const transaction = db.transaction([STORE_NAME], "readwrite");
-    const store = transaction.objectStore(STORE_NAME);
+    const transaction = db.transaction([WALLPAPER_STORE], "readwrite");
+    const store = transaction.objectStore(WALLPAPER_STORE);
     const request = store.delete(WALLPAPER_KEY);
 
     request.onsuccess = () => resolve();
@@ -101,5 +110,47 @@ export async function hasCustomWallpaper(): Promise<boolean> {
     return wallpaper !== null;
   } catch {
     return false;
+  }
+}
+
+/**
+ * Save notepad content to IndexedDB
+ * @param content - The text content to save
+ */
+export async function saveNotepadContent(content: string): Promise<void> {
+  const db = await openDatabase();
+
+  return new Promise((resolve, reject) => {
+    const transaction = db.transaction([DATA_STORE], "readwrite");
+    const store = transaction.objectStore(DATA_STORE);
+    const request = store.put(content, NOTEPAD_KEY);
+
+    request.onsuccess = () => resolve();
+    request.onerror = () => reject(request.error);
+  });
+}
+
+/**
+ * Load notepad content from IndexedDB
+ * @returns Promise that resolves with the text content or null if nothing is saved
+ */
+export async function loadNotepadContent(): Promise<string | null> {
+  try {
+    const db = await openDatabase();
+
+    return new Promise((resolve, reject) => {
+      const transaction = db.transaction([DATA_STORE], "readonly");
+      const store = transaction.objectStore(DATA_STORE);
+      const request = store.get(NOTEPAD_KEY);
+
+      request.onsuccess = () => {
+        resolve(request.result ?? null);
+      };
+
+      request.onerror = () => reject(request.error);
+    });
+  } catch (error) {
+    console.error("Failed to load notepad content:", error);
+    return null;
   }
 }
