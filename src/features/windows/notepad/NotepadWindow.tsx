@@ -1,16 +1,13 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import {
-  loadNotepadContent,
-  saveNotepadContent,
-} from "@/lib/storage";
+import { loadNotepadContent, saveNotepadContent } from "@/lib/storage";
 
 export default function NotepadWindow() {
   const [text, setText] = useState("");
   const [isLoaded, setIsLoaded] = useState(false);
 
-  // Load saved content from IndexedDB on mount
+  // Load saved content from DB on mount
   useEffect(() => {
     loadNotepadContent().then((savedContent) => {
       if (savedContent) {
@@ -20,7 +17,7 @@ export default function NotepadWindow() {
     });
   }, []);
 
-  // Save content to IndexedDB whenever it changes
+  // Save content when text changes
   useEffect(() => {
     if (isLoaded) {
       saveNotepadContent(text);
