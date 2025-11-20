@@ -1,25 +1,11 @@
 "use client";
 
-import { Suspense, lazy, ComponentType } from "react";
+import { ComponentType, useEffect, useState } from "react";
 import Navbar from "@/features/navigation/navbar/Navbar";
 import Dock from "@/features/navigation/dock/Dock";
 import DraggableWindow from "@/components/ui/DraggableWindow";
 import Wallpaper from "@/components/ui/Wallpaper";
 import { useWindows } from "@/contexts/WindowContext";
-
-const lazyComponentCache = new Map<
-  () => Promise<{ default: ComponentType }>,
-  React.LazyExoticComponent<ComponentType>
->();
-
-function getLazyComponent(
-  componentLoader: () => Promise<{ default: ComponentType }>
-) {
-  if (!lazyComponentCache.has(componentLoader)) {
-    lazyComponentCache.set(componentLoader, lazy(componentLoader));
-  }
-  return lazyComponentCache.get(componentLoader)!;
-}
 
 export default function OperatingSystem() {
   const {
@@ -29,6 +15,28 @@ export default function OperatingSystem() {
     focusedWindow,
     focusWindow,
   } = useWindows();
+
+  const [loadedComponents, setLoadedComponents] = useState<
+    Map<string, ComponentType>
+  >(new Map());
+
+  // Eagerly load all window components on mount
+  useEffect(() => {
+    const loadComponents = async () => {
+      const componentMap = new Map<string, ComponentType>();
+
+      await Promise.all(
+        windowConfigs.map(async (config) => {
+          const loadedModule = await config.component();
+          componentMap.set(config.id, loadedModule.default);
+        })
+      );
+
+      setLoadedComponents(componentMap);
+    };
+
+    loadComponents();
+  }, [windowConfigs]);
 
   return (
     <main>
@@ -41,7 +49,8 @@ export default function OperatingSystem() {
         <Dock />
 
         {windowConfigs.map((config) => {
-          const LazyWindow = getLazyComponent(config.component);
+          const WindowComponent = loadedComponents.get(config.id);
+
           return (
             <DraggableWindow
               key={config.id}
@@ -53,11 +62,11 @@ export default function OperatingSystem() {
               height={config.height}
               width={config.width}
             >
-              <Suspense
-                fallback={<div className="p-6 text-white/60">Loading...</div>}
-              >
-                <LazyWindow />
-              </Suspense>
+              {WindowComponent ? (
+                <WindowComponent />
+              ) : (
+                <div className="p-6 text-white/60">Loading...</div>
+              )}
             </DraggableWindow>
           );
         })}

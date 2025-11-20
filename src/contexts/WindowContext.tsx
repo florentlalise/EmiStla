@@ -7,7 +7,7 @@ import {
   ReactNode,
   ComponentType,
 } from "react";
-import { Folder, Settings, LucideIcon, NotepadText } from "lucide-react";
+import { Folder, Settings, LucideIcon, NotepadText, Globe } from "lucide-react";
 import { playSound } from "@/lib/sounds";
 
 export interface WindowConfig {
@@ -43,6 +43,14 @@ export const WINDOW_CONFIGS: WindowConfig[] = [
     width: 830,
     height: 520,
     component: () => import("@/features/windows/notepad/NotepadWindow"),
+  },
+  {
+    id: "browser",
+    title: "Browser",
+    icon: Globe,
+    width: 1424,
+    height: 768,
+    component: () => import("@/features/windows/browser/BrowserWindow"),
   },
 ];
 

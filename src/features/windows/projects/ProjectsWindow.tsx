@@ -3,6 +3,8 @@
 import { useState } from "react";
 import { fileSystem, type FileSystemItem, type Folder } from "./projectsData";
 import { playSound } from "@/lib/sounds";
+import { useOpenInBrowser } from "@/lib/browserHelpers";
+import { useWindows } from "@/contexts/WindowContext";
 
 function isFolder(item: FileSystemItem): item is Folder {
   return "type" in item && item.type === "folder";
@@ -12,6 +14,8 @@ export default function ProjectsWindow() {
   const [expandedFolders, setExpandedFolders] = useState<Set<string>>(
     new Set()
   );
+  const openInBrowser = useOpenInBrowser();
+  const { openWindow } = useWindows();
 
   const toggleFolder = (folderName: string) => {
     setExpandedFolders((prev) => {
@@ -49,6 +53,20 @@ export default function ProjectsWindow() {
       );
     } else {
       const isDisabled = item.disabled;
+      const handleClick = (e: React.MouseEvent) => {
+        if (isDisabled) {
+          e.preventDefault();
+          return;
+        }
+
+        // If target is not browser, open in browser window
+        if (item.target === "browser") {
+          e.preventDefault();
+          openInBrowser(item.url, () => openWindow("browser"));
+        }
+        // Otherwise, let the default behavior
+      };
+
       return (
         <a
           key={item.name}
@@ -61,7 +79,7 @@ export default function ProjectsWindow() {
               : "hover:bg-white/10 cursor-pointer"
           }`}
           style={{ paddingLeft: `${depth * 16 + 8}px` }}
-          onClick={(e) => isDisabled && e.preventDefault()}
+          onClick={handleClick}
         >
           <span className="text-sm">📄</span>
           <span

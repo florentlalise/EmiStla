@@ -52,7 +52,7 @@ export default function DraggableWindow({
         ref={nodeRef}
         onMouseDown={handleFocus}
         style={{ zIndex, width: `${width}px`, height: `${height}px` }}
-        className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-black/90 backdrop-blur-md rounded-lg shadow-2xl"
+        className="fixed overflow-hidden top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-black/90 backdrop-blur-md rounded-lg shadow-2xl"
       >
         <div className="window-header flex items-center justify-between h-10 px-4 bg-white/10 rounded-t-lg cursor-move">
           <div className="flex items-center gap-2">

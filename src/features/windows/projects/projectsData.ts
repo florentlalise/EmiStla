@@ -2,7 +2,7 @@ export interface Project {
   name: string;
   url: string;
   type: "project";
-  target: "_self" | "_blank";
+  target: "_self" | "_blank" | "browser";
   disabled?: boolean;
 }
 
@@ -22,7 +22,7 @@ export const fileSystem: FileSystemItem[] = [
       {
         name: "Wizi",
         url: "https://wizi.io",
-        target: "_blank",
+        target: "browser",
         type: "project",
       },
     ],
