@@ -16,6 +16,7 @@ export interface WindowConfig {
   icon: LucideIcon;
   height: number;
   width: number;
+  initialPosition?: { x: number | string; y: number | string };
   component: () => Promise<{ default: ComponentType }>;
 }
 
@@ -26,6 +27,7 @@ export const WINDOW_CONFIGS: WindowConfig[] = [
     icon: Folder,
     width: 450,
     height: 310,
+    initialPosition: { x: "-15vw", y: "-10vh" },
     component: () => import("@/features/windows/projects/ProjectsWindow"),
   },
   {
@@ -34,6 +36,7 @@ export const WINDOW_CONFIGS: WindowConfig[] = [
     icon: Settings,
     width: 690,
     height: 520,
+    initialPosition: { x: "-5vw", y: "-18vh" },
     component: () => import("@/features/windows/settings/SettingsWindow"),
   },
   {
@@ -42,6 +45,7 @@ export const WINDOW_CONFIGS: WindowConfig[] = [
     icon: NotepadText,
     width: 830,
     height: 520,
+    initialPosition: { x: "-10vw", y: "-15vh" },
     component: () => import("@/features/windows/notepad/NotepadWindow"),
   },
   {
@@ -50,6 +54,7 @@ export const WINDOW_CONFIGS: WindowConfig[] = [
     icon: Globe,
     width: 1424,
     height: 768,
+    initialPosition: { x: "-45vw", y: "-45vh" },
     component: () => import("@/features/windows/browser/BrowserWindow"),
   },
 ];

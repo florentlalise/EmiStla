@@ -61,6 +61,7 @@ export default function OperatingSystem() {
               onFocus={() => focusWindow(config.id)}
               height={config.height}
               width={config.width}
+              initialPosition={config.initialPosition}
             >
               {WindowComponent ? (
                 <WindowComponent />
